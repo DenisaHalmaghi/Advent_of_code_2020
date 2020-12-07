@@ -4,15 +4,8 @@ fs = require( 'fs' );
 fs.readFile( 'input.txt', 'utf8', function ( err, data )
 {
   const input = data.replace( /\r\n/g, " " ).split( /\s{2}/ );
-
-  // const required = [ 'byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid' ]
-  // const [ , a ] = "160cm".match( /([0-9]{3})cm/ )
-  // console.log( a )
-  // exit( 0 )
   const requirements = validation()
 
-  // console.log( requirements[ 'hgt' ]( '60in' ) );
-  // exit( 0 );
   const matches = input.reduce( ( carry, passport ) =>
   {
     let isMatch = true;
@@ -20,20 +13,13 @@ fs.readFile( 'input.txt', 'utf8', function ( err, data )
     {
       const regex = `${ requirement }:([^ ]*)`;
       const match = passport.match( regex )
-      //property not found
-      if ( !match )
+      let value = null;
+      match && ( [ , value ] = match )
+
+      if ( !match || !requirements[ requirement ]( value ) )
       {
         isMatch = false
         break
-      }
-      else 
-      {
-        const [ , value ] = match
-        if ( !requirements[ requirement ]( value ) )
-        {
-          isMatch = false
-          break
-        }
       }
     }
     return isMatch ? carry + 1 : carry
